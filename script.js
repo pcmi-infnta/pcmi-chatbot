@@ -19,47 +19,6 @@ function getPhilippinesTime() {
 }
 
 
-function getUserLocation() {
-    return new Promise((resolve, reject) => {
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-
-                    try {
-                        const response = await fetch(`https://api.distancematrix.ai/maps/api/geocode/json?latlng=${latitude},${longitude}&key=0979303598c6c4a5a390ea11e4d9294a`);
-                        const data = await response.json();
-                        const address = data.results[0].formatted_address;
-
-                        resolve({
-                            coordinates: `${latitude}, ${longitude}`,
-                            address: address
-                        });
-                    } catch (error) {
-                        resolve({
-                            coordinates: `${latitude}, ${longitude}`,
-                            address: "Unable to determine precise location"
-                        });
-                    }
-                },
-                (error) => {
-                    resolve({
-                        coordinates: "Location access denied",
-                        address: "Unable to determine location"
-                    });
-                }
-            );
-        } else {
-            resolve({
-                coordinates: "Geolocation not supported",
-                address: "Unable to determine location"
-            });
-        }
-    });
-}
-
-
 // Load both files when the page loads
 Promise.all([
   fetch('training-data/church-knowledge.txt').then(response => response.text()),
@@ -156,20 +115,9 @@ const generateAPIResponse = async (incomingMessageDiv) => {
 
   // Get current Philippines time and user location
   const currentTime = getPhilippinesTime();
-  const userLocation = await getUserLocation();
-
+  
   // Add current context and rules
   const contextPrefix = `Current Date and Time in Philippines: ${currentTime}
-User's Current Location Data:
-Coordinates: ${userLocation.coordinates}
-Approximate Location: ${userLocation.address}
-
-LOCATION HANDLING RULES:
-- Provide exact coordinates when available
-- Use basic location names based on coordinate ranges
-- Do not automatically relate to church location
-- Only mention church location if specifically asked
-;
 
   PRIORITY - CONVERSATION FLOW RULES:
   ${conversationFlowRules}
