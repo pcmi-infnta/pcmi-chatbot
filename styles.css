@@ -17,7 +17,7 @@
   --primary-color: #242424;
   --secondary-color: #383838;
   --secondary-hover-color: #444;
-  user-select: none;
+ /* user-select: none;*/
   transition: all 0.5s ease;
 }
 
